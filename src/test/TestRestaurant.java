@@ -78,11 +78,12 @@ public class TestRestaurant {
     r.insert(1200);
     r.insert(1400);
     
-    //op 1400 is er nog geen reservering
+    //Boeking op het exacte moment van het tijdslot + beschikbaar
     assertEquals(1400,r.findClosestAvailableTime(1400));
     
-    //op 1215 is het dichtsbijzijnde tijdslot 1200 uur
+    //op dichtsbijzijnde tijdslot 1200 uur
     assertEquals(1200,r.findClosestAvailableTime(1215));
+    assertEquals(1200,r.findClosestAvailableTime(1259));
     
     //op gelijke afstand gaat naar eerdere tijd
     assertEquals(1200,r.findClosestAvailableTime(1300));
@@ -92,8 +93,24 @@ public class TestRestaurant {
     assertEquals(1200,r.findClosestAvailableTime(1000));
     assertEquals(1400,r.findClosestAvailableTime(2000));
     
-    //boek 1200 vol
-    //test bovenstaande
+    //boek 1400 vol
+    r.book(1400, "carlo");
+    
+    //Boeking op het exacte moment van het tijdslot + niet meer beschikbaar
+    assertEquals(1200,r.findClosestAvailableTime(1400));
+    assertEquals(1200,r.findClosestAvailableTime(1500));
+    assertEquals(1200,r.findClosestAvailableTime(1000));
+    
+    r.book(1400, "henk");
+    
+    //geen boekingen meer volgeboekt
+    assertEquals(-1,r.findClosestAvailableTime(1000));
+    assertEquals(-1,r.findClosestAvailableTime(1200));
+    assertEquals(-1,r.findClosestAvailableTime(1400));
+    assertEquals(-1,r.findClosestAvailableTime(1500));
+    
+    //ongeldig tijdsformaat
+    assertEquals(-2,r.findClosestAvailableTime(70));
     
     
     //boek 1400 vol
@@ -110,9 +127,9 @@ public class TestRestaurant {
     r.insert(1200);
     r.insert(1400);   
     
-    r.book(1400, "carlo");
-    r.book(1410, "henk");
-    System.out.println(r.toString());
+//    r.book(1400, "carlo");
+//    r.book(1400, "henk");
+//    System.out.println(r.toString());
   }
   
   

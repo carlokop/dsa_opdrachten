@@ -1,5 +1,7 @@
 package opgave;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -12,21 +14,39 @@ public class RestaurantHerzien implements ReservationOperations {
    * @param value (Node> een node element die initieel null zal zijn en bij creatie als key een kopie van hat tijdslot zal bevatten omdat de get methode alleen de value returned 
    */
   private TreeMap<Integer, Reservation> tijdsloten = new TreeMap<>();
-
-
+  private int start_tijdslot;
+  private int eind_tijdslot;
+  
+  public RestaurantHerzien(int start, int eind) {
+    this.start_tijdslot = start;
+    this.eind_tijdslot = eind;
+    
+    //maak alle tijdsloten
+    if(TimeNode.checkTime(start) && TimeNode.checkTime(eind)) {
+      LocalTime starttijd = new TimeNode(start).getTime();
+      LocalTime eindtijd = new TimeNode(eind).getTime();
+      
+      for(int i=starttijd.getHour(); i<= eindtijd.getHour(); i++) {
+        insert(i*100);
+      }
+    }
+    
+    
+  }
+  
   /**
    * Maak het opgegeven tijdslot aan.
    * @param time tijdslot in formaat hhmm (bijv. 800 voor 08:00, 1400 voor 14:00)
    */
   @Override
   public void insert(int time)  {    
-    if(time < 800 || time > 2259) {
-      return;
-    }
+    if(!TimeNode.checkTime(time)) { return;}
+    
     //tijdslot moet heel uur zijn afgerond naar beneden
     int tijdslot = time / 100 * 100;
-    tijdsloten.put(tijdslot,null);
-    
+    if(tijdslot >= this.start_tijdslot && tijdslot <= this.eind_tijdslot) {
+      tijdsloten.put(tijdslot,null);
+    }
   }
 
   /**
@@ -37,6 +57,8 @@ public class RestaurantHerzien implements ReservationOperations {
    */
   @Override
   public Reservation search(int time) {
+    if(!TimeNode.checkTime(time)) { return null;}
+    
     Reservation reservering = tijdsloten.get(time);
     return reservering;
   }
@@ -56,29 +78,48 @@ public class RestaurantHerzien implements ReservationOperations {
    */
   @Override
   public int findClosestAvailableTime(int time) {
+    //onjuiste tijd
+    if(!TimeNode.checkTime(time)) { return -1; }
+    
     //Voor de opgegeveven tijd gelijk aan het tijdslot en er is geen reservering
     Reservation reservering = tijdsloten.get(time);            // O(log n)
     if(reservering == null && tijdsloten.containsKey(time)) {  // O(log n)
       return time;
     }
 
-    Integer lowertime = searchClosestAvailableLower(time);
-    Integer highertime = searchClosestAvailableHigher(time);
-    
-    System.out.println("time: "+time + " lower " + lowertime + " higher" + highertime);
+    Integer lower = searchClosestAvailableLower(time);
+    Integer higher = searchClosestAvailableHigher(time);
     
     //volgeboekt
-    if(lowertime == -1 && highertime == -1) {
+    if(lower == -1 && higher == -1) {
       return -1;
     }
     
-    int distLower = Math.abs(time-lowertime);
-    int distHigher = Math.abs(time-highertime);
+    if(higher == -1) { return lower; }
+    if(lower == -1) { return higher; }
+
+    int distLower = 0;
+    int distHigher = 0;
     
-    if(highertime == -1) { return lowertime; } 
-    return distLower <= distHigher && distLower != -1 ? lowertime : highertime;
+    try {
+      //dit zou allemaal in O(1) uitgevoerd moeten worden
+      LocalTime lowertime = new TimeNode(lower).getTime();
+      LocalTime highertime = new TimeNode(higher).getTime(); 
+      LocalTime voorkeurtijd = new TimeNode(time).getTime(); 
+      
+      //bereken aantal minuten verschil tussen tijden en voorkeur
+      Duration dlower = Duration.between(lowertime, voorkeurtijd);
+      Duration dhigher = Duration.between(highertime, voorkeurtijd);
+      distLower = Math.abs((int) dlower.toMinutes());
+      distHigher = Math.abs((int) dhigher.toMinutes());
+      
+    } catch(IllegalArgumentException e) {}
+     
+    return distLower <= distHigher && distLower != -1 ? lower : higher;
     
   }
+  
+  
   
   /**
    * Zoekt naar een beschikbaar tijdslot die lager is dan gegeven time
@@ -87,13 +128,14 @@ public class RestaurantHerzien implements ReservationOperations {
    * @return tijdstip beschikbaar
    */
   private int searchClosestAvailableLower(int time) {
-    Integer lowerKey = tijdsloten.lowerKey(time);
-    while (lowerKey != null) {
+    Integer lowerKey = tijdsloten.lowerKey(time);  // O(log n)
+    while (lowerKey != null) {                     // O(n)
       Reservation res = tijdsloten.get(lowerKey);  // O(log n)
-      if(res != null && res.getNaam() == null) {
+      if(res == null) {
           return lowerKey; 
+      } else {
+        lowerKey = tijdsloten.lowerKey(lowerKey);  // O(log n)
       }
-      lowerKey = tijdsloten.lowerKey(lowerKey); 
     }
     return -1;
   }
@@ -105,13 +147,14 @@ public class RestaurantHerzien implements ReservationOperations {
    * @return tijdstip beschikbaar
    */
   private int searchClosestAvailableHigher(int time) {
-    Integer higherKey = tijdsloten.higherKey(time);
-    while (higherKey != null) {
+    Integer higherKey = tijdsloten.higherKey(time); // O(log n)
+    while (higherKey != null) {                     // O(n)
       Reservation res = tijdsloten.get(higherKey);  // O(log n)
-      if (res != null && res.getNaam() == null) {
+      if(res == null) {
           return higherKey; 
+      } else {
+        higherKey = tijdsloten.higherKey(higherKey);  // O(log n)
       }
-      higherKey = tijdsloten.higherKey(higherKey);
     }
     return -1;
   }
@@ -122,15 +165,18 @@ public class RestaurantHerzien implements ReservationOperations {
    * Het tijdslot moet bestaan en vrij zijn, anders wordt er niet gereserveerd.
    * @param time tijdslot in formaat hhmm (bijv. 800 voor 08:00, 1330 voor 13:30)
    * @param name naam voor reservering (bijv. "Smit")
+   * Complexiteit O(n log n)
    */
   @Override
   public void book(int time, String name) {
+    
     //zoek dichtsbijzijnde beschikbaar tijdslot
-    int tijdslot = findClosestAvailableTime(time);
-    System.out.println("Closest: " + tijdslot);
-    if(tijdslot != -1) {
-      tijdsloten.put(tijdslot,new Reservation(tijdslot,name));
-    };
+    int tijdslot = findClosestAvailableTime(time);          // O(n log n)
+    
+    //valt boeking in het tijdslot?
+    if(isInTijdslot(time,tijdslot)) {
+      tijdsloten.put(tijdslot,new Reservation(time,name));  // O(log n)
+    }
   }
 
   @Override
@@ -142,6 +188,19 @@ public class RestaurantHerzien implements ReservationOperations {
   public void cancel(int time) {
     // TODO Auto-generated method stub
     
+  }
+  
+  /**
+   * Controleert of een gewenst tijdstip in een gegeven tijdslot valt
+   * @param time        gewenste tijd hhmm
+   * @param tijdslot    tijdslot hh*100 
+   * @return            true als gewenste tijd in het tijdslot valt
+   */
+  private boolean isInTijdslot(int time, int tijdslot) {
+    if(tijdslot == -1 || !TimeNode.checkTime(time)) return false;
+    LocalTime tijdTijdslot = new TimeNode(tijdslot).getTime();
+    LocalTime tijdGewenst = new TimeNode(time).getTime();   
+    return tijdTijdslot.getHour() == tijdGewenst.getHour();
   }
   
   /**
