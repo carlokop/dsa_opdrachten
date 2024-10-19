@@ -32,15 +32,6 @@ public class Reservation implements Comparable<Reservation> {
   }
   
   /**
-   * Sets de naam van de resrevering
-   * @param de naam
-   */
-  public void setNaam(String naam) {
-    this.naam = naam;
-  }
-
-
-  /**
    * Vergelijkt welke reservering de eerste tijd heeft
    * @return kleiner dan 0 als de tijd van this kleiner is
    */
@@ -51,11 +42,13 @@ public class Reservation implements Comparable<Reservation> {
   
   /**
    * Geeft een string representatie van het object
-   * @return "Reservering: naam  tijd;
+   * @return Reservering: naam  hh:mm;
    */
   @Override
   public String toString() {
-    return "Reservering: " + tijd + " " + naam + "\n";
+    int uren = tijd / 100;
+    String minuten = String.format("%02d", tijd % 100);
+    return "Reservering: " + naam + " om " + uren + ":" + minuten +"\n";
   }
   
   /**
@@ -69,7 +62,6 @@ public class Reservation implements Comparable<Reservation> {
     return tijd == res.getTijd() && naam.equals(res.naam);
   }
   
-
 
   
 

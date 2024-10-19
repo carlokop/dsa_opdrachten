@@ -3,13 +3,13 @@ package datastructure;
 import java.util.Comparator;
 import java.util.TreeMap;
 
-public class AVLTreeMap extends TreeMap {
+public class AVLTreeMapBoek extends TreeMap {
 
-  public AVLTreeMap() {
+  public AVLTreeMapBoek() {
     super();
   }
   
-  public AVLTreeMap(Comparator<K> comp) {
+  public AVLTreeMapBoek(Comparator<K> comp) {
     super(comp);
   }
   

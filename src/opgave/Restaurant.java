@@ -1,12 +1,35 @@
 package opgave;
 
 import java.util.Iterator;
-import java.util.TreeSet;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 public class Restaurant implements ReservationOperations {
   
-  private TreeSet<Reservation> tijdsloten = new TreeSet<>();
+  /**
+   * @param key (Integer) is het tijdslot
+   * @param value (Node> een node element die initieel null zal zijn en bij creatie als key een kopie van hat tijdslot zal bevatten omdat de get methode alleen de value returned 
+   */
+  private TreeMap<Integer, Node<Integer,Reservation>> tijdsloten = new TreeMap<>();
+  
+  class Node<K,V> {
+    K key;
+    V value = null;     
+    
+    Node(K key) {
+      this.key = key;
+    }
+    
+    Node(K key,V value) {
+      this.key = key;
+      this.value = value;
+    }
+    
+    protected K getKey() {return this.key;}
+    protected V getValue() {return this.value;}
+    protected void setValue(V value) {this.value = value;}
+  }
   
 
   /**
@@ -19,24 +42,21 @@ public class Restaurant implements ReservationOperations {
       return;
     }
     //tijdslot moet heel uur zijn afgerond naar beneden
-    int tijd = time / 100 * 100;
-    Reservation reservation = new Reservation(tijd,null);
-    tijdsloten.add(reservation);
+    int tijdslot = time / 100 * 100;
+    Node<Integer,Reservation> node = new Node<>(tijdslot);
+    tijdsloten.put(tijdslot,node);
   }
 
-
   /**
-   * Zoekt naar een tijdslot 
-   * Complexity O(log n + log n)
-   * @return de reservering op het tijdslot of null
+   * Zoek naar een reservering op het aangegeven tijdslot.
+   * @param time gewenst tijdslot in formaat hhmm
+   * @return null als het tijdslot niet bestaat of niet vrij is
+   * instantie van Reservation als tijdslot bestaat en gereserveerd is
    */
   @Override
   public Reservation search(int time) {
-    Reservation res = new Reservation(time, null);
-    if(tijdsloten.contains(res)) {      //contains O(log n)
-      return tijdsloten.ceiling(res);   //ceiling O(log n)
-    }
-    return null;
+    Node<Integer,Reservation> node = tijdsloten.get(time);
+    return node.getValue();
   }
 
   /**
@@ -50,22 +70,68 @@ public class Restaurant implements ReservationOperations {
    * @param time gewenst tijdslot in formaat hhmm
    * @return eerst beschikbaar tijdslot als een tijdslot kan worden gevonden
    * -1 als geen tijdslot kan worden gevonden
+   * Complexiteit O(n logn)
    */
   @Override
   public int findClosestAvailableTime(int time) {
-    Reservation res = new Reservation(time, null);
-    //opgegeven tijd is beschikbaar
-    if(tijdsloten.contains(res)) {  
-      System.out.println(tijdsloten.ceiling(res));
+    //Voor de opgegeveven tijd is er een tijdslot en dit is beschikbaar
+    Node<Integer,Reservation> node = tijdsloten.get(time);
+    if(node != null && node.getValue() == null) {
+      return time;
     }
-    //Vind dichtsbijzijnde tijd dit moet recursief
     
-    //Dichtsbijzijnde tijd even ver van elkaar, geef dan de eerdere tijd terug
+    Integer lowertime = searchClosestAvailableLower(time);
+    Integer highertime = searchClosestAvailableHigher(time);
     
-    //anders geef de tijd die het dichtsbij ligt
-    return time;
-
+    //volgeboekt
+    if(lowertime == -1 && highertime == -1) {
+      return -1;
+    }
+    
+    int distLower = Math.abs(time-lowertime);
+    int distHigher = Math.abs(time-highertime);
+    
+    if(highertime == -1) { return lowertime; } 
+    return distLower <= distHigher && distLower != -1 ? lowertime : highertime;
+    
   }
+  
+  /**
+   * Zoekt naar een beschikbaar tijdslot die lager is dan gegeven time
+   * Complexity O(n logn) omdat we steeds het dichtsbijzijnde element zoeken die potentieel niet beschikbaar is en de hele lijst kleiner dan time doorlopen moet worden
+   * @param time gewenste tijdstop
+   * @return tijdstip beschikbaar
+   */
+  private int searchClosestAvailableLower(int time) {
+    Integer lowerKey = tijdsloten.lowerKey(time);
+    while (lowerKey != null) {
+      Node<Integer, Reservation> node = tijdsloten.get(lowerKey);
+      if (node != null && node.getValue() == null) {
+          return lowerKey; 
+      }
+      lowerKey = tijdsloten.lowerKey(lowerKey); 
+    }
+    return -1;
+  }
+  
+  /**
+   * Zoekt naar een beschikbaar tijdslot die hoger is dan gegeven time
+   * Complexity O(n logn) omdat we steeds het dichtsbijzijnde element zoeken die potentieel niet beschikbaar is en de hele lijst groter dan time doorlopen moet worden
+   * @param time gewenste tijdstop
+   * @return tijdstip beschikbaar
+   */
+  private int searchClosestAvailableHigher(int time) {
+    Integer higherKey = tijdsloten.higherKey(time);
+    while (higherKey != null) {
+      Node<Integer, Reservation> node = tijdsloten.get(higherKey);
+      if (node != null && node.getValue() == null) {
+          return higherKey; 
+      }
+      higherKey = tijdsloten.higherKey(higherKey);
+    }
+    return -1;
+  }
+  
 
   /**
    * Boek het opgegeven tijdslot met de opgegeven naam.
@@ -75,13 +141,12 @@ public class Restaurant implements ReservationOperations {
    */
   @Override
   public void book(int time, String name) {
-    //zoek dichtsbijzijnd beschikbaar tijdslot
+    //zoek dichtsbijzijnde beschikbaar tijdslot
     int tijdslot = findClosestAvailableTime(time);
     if(tijdslot != -1) {
-      //niet volgeboekt reservering kan gemaakt worden
-      Reservation res = tijdsloten.ceiling(new Reservation(tijdslot, null));
-      res.setNaam(name);
-    }       
+      Node<Integer,Reservation> node = tijdsloten.get(tijdslot);
+      node.setValue(new Reservation(time,name));
+    };
   }
 
   @Override
@@ -101,19 +166,33 @@ public class Restaurant implements ReservationOperations {
    */
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("Reserveringen:\n");
-    Iterator<Reservation> iterator = tijdsloten.iterator();
+    StringBuilder str = new StringBuilder("Reserveringen:\n");
+    Iterator<Map.Entry<Integer, Node<Integer, Reservation>>> iterator = tijdsloten.entrySet().iterator();
+    
     while (iterator.hasNext()) {
-        Reservation element = iterator.next();
-        int uren = element.getTijd() / 100;
-        String minuten = String.format("%02d", element.getTijd() % 100);
-        sb.append("Tijdslot: " + uren + ":" + minuten)
-        .append(", Reservering: ")
-        .append(element.getNaam() != null ? element.getNaam() : "Geen reservering")
+      Map.Entry<Integer, Node<Integer, Reservation>> entry = iterator.next();
+      Integer tijdslot = entry.getKey();
+      Node<Integer, Reservation> node = entry.getValue();
+     
+      //tijdslot notatie
+      int uren = tijdslot / 100;
+      String minuten = String.format("%02d", tijdslot % 100);
+      str.append("Tijdslot: ")
+      .append(uren + ":" + minuten);
+      
+      //reservering
+      Reservation element = node.getValue();
+      if(element == null) {
+        str.append(", Geen reservering")
         .append("\n");
+      }
+      else {
+        str.append(", " + element.toString());
+      }
     }
-    return sb.toString();
-}
+    return str.toString();
+  }
+  
   
   /**
    * Geeft het aantal tijdsloten
