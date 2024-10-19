@@ -18,6 +18,7 @@ public class Reservation implements Comparable<Reservation> {
   /**
    * geeft de tijd van de reservering
    * @return  de tijd
+   * Complexiteit O(1)
    */
   public int getTijd() {
     return tijd;
@@ -26,6 +27,7 @@ public class Reservation implements Comparable<Reservation> {
   /**
    * Geeft de naam van de resrevering
    * @return de naam
+   * Complexiteit O(1)
    */
   public String getNaam() {
     return naam;
@@ -34,6 +36,7 @@ public class Reservation implements Comparable<Reservation> {
   /**
    * Vergelijkt welke reservering de eerste tijd heeft
    * @return kleiner dan 0 als de tijd van this kleiner is
+   * Complexiteit O(1) hier vergelijken we alleen twee waarden en doorlopen geen lijst
    */
   @Override
   public int compareTo(Reservation res) {
@@ -43,6 +46,7 @@ public class Reservation implements Comparable<Reservation> {
   /**
    * Geeft een string representatie van het object
    * @return Reservering: naam  hh:mm;
+   * Complexiteit O(1) 
    */
   @Override
   public String toString() {
@@ -54,6 +58,7 @@ public class Reservation implements Comparable<Reservation> {
   /**
    * Vergelijkt naam en tijd .
    * @return true als zelfde naam en tijd
+   * Complexiteit O(1)
    */
   @Override
   public boolean equals(Object o) {
