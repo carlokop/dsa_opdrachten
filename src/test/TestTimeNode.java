@@ -15,23 +15,21 @@ public class TestTimeNode {
 
   @Test
   public void maakTijdTest() {
-    TimeNode t = new TimeNode(100);
-    LocalTime tijd = t.getTime();
+    LocalTime tijd = TimeNode.maakTijd(100);
     
     assertEquals(1,tijd.getHour());
     assertEquals(0,tijd.getMinute());
     
-    t = new TimeNode(1230);
-    tijd = t.getTime();
+    tijd = TimeNode.maakTijd(1230);
     
     assertEquals(12,tijd.getHour());
     assertEquals(30,tijd.getMinute());
     
     IllegalArgumentException err = assertThrows(IllegalArgumentException.class, () -> {
-      new TimeNode(70);
+      TimeNode.maakTijd(70);
     });
     
-    assertEquals("Ongeldig tijdsformaat",err.getMessage());
+    assertEquals("Tijdsformaat 70 (hhmm) kan niet worden omgezet in een geldige tijd",err.getMessage());
     
   }
   

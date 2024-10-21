@@ -5,39 +5,31 @@ import java.time.LocalTime;
 /**
  * Maakt tijdsobject
  */
-public class TimeNode {
+public final class TimeNode {
 
-  LocalTime time;
+  //voorkomt instantiatie
+  private TimeNode() {}
   
   /**
    * Maakt een TimeNode object wat een tijdobject maakt uit een int uumm
-   * @param time
+   * @param time    tijd in uumm
    * @throws IllegalArgumentException
-   * Complexiteit O(1) want we doorlopen hier geen lijsten. 
+   * Complexiteit O(1) want we doorlopen hier geen lijsten en voeren allee wat sting opereraties uit die in constante tijd uitgevoerd kunnen worden
    */
-  public TimeNode(int time) throws IllegalArgumentException {
+  public static LocalTime maakTijd(int time) throws IllegalArgumentException {
     if(!TimeNode.checkTime(time)) {
-      throw new IllegalArgumentException("Ongeldig tijdsformaat");
+      throw new IllegalArgumentException("Tijdsformaat " + time + " (hhmm) kan niet worden omgezet in een geldige tijd");
     }
     
     String numberStr = String.format("%04d", time); 
     int hours = Integer.parseInt(numberStr.substring(0, 2));
     int minutes = Integer.parseInt(numberStr.substring(2, 4));
-    this.time = LocalTime.of(hours, minutes);
-    
+    return LocalTime.of(hours, minutes);
   }
   
-  /**
-   * Geeft tijdsobject
-   * @return    tijdsobject
-   * Complexiteit O(1)
-   */
-  public LocalTime getTime() {
-    return this.time;
-  }
   
   /**
-   * Controleert of geldige tijd is opgegeven
+   * Valideert of int met time hhmm omgezet kan worden in een geldige tijd
    * @param time    hhmm 
    * @return        true als het een geldige tijd is
    * Complexiteit O(1) We doen hier een aantal string operaties. Die kunenn gezien worden als constante tijd.

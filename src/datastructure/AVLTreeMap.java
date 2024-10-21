@@ -13,8 +13,8 @@ import java.util.Set;
  * Reden hiervoor is dat het O(n log n) zou kosten om met de TreeMap klasse het dichtstbijzijnde tijdslot te vinden die beschikbaar is 
  * Dit vanwegen het gebrek in de Java klasse van de mogelijkheid om in O(1) de parent, children, siblings en isInternal of isExternal aan te roepen
  * 
- * @param <K>
- * @param <V>
+ * @param <K> key
+ * @param <V> value
  */
 public class AVLTreeMap<K extends Comparable<K>, V> extends AbstractMap<K, V> implements Map<K, V> {
   

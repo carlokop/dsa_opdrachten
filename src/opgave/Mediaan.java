@@ -55,7 +55,8 @@ public class Mediaan  {
   * Voegt een item toe aan PQ l als de som van de size van l en u even is en anders in u
   *
   * @param i het getal om toe te voegen.
-  * 
+  */
+  /*
   @ @Contract evenAantal { //voegt item toe aan PQ l
   @   @requires l.size() == u.size() 
   @   @ensures l.size() == u.size()+1

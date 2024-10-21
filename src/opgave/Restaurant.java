@@ -29,8 +29,8 @@ public class Restaurant implements ReservationOperations {
     
     //maak alle tijdsloten
     if(TimeNode.checkTime(start) && TimeNode.checkTime(eind)) {
-      LocalTime starttijd = new TimeNode(start).getTime();
-      LocalTime eindtijd = new TimeNode(eind).getTime();
+      LocalTime starttijd = TimeNode.maakTijd(start);
+      LocalTime eindtijd = TimeNode.maakTijd(eind);
       
       for(int i=starttijd.getHour(); i<= eindtijd.getHour(); i++) {
         insert(i*100);
@@ -117,9 +117,9 @@ public class Restaurant implements ReservationOperations {
     
     try {
       //dit zou allemaal in O(1) uitgevoerd moeten worden
-      LocalTime lowertime = new TimeNode(lower).getTime();
-      LocalTime highertime = new TimeNode(higher).getTime(); 
-      LocalTime voorkeurtijd = new TimeNode(time).getTime(); 
+      LocalTime lowertime = TimeNode.maakTijd(lower);
+      LocalTime highertime = TimeNode.maakTijd(higher); 
+      LocalTime voorkeurtijd = TimeNode.maakTijd(time); 
       
       //bereken aantal minuten verschil tussen tijden en voorkeur
       Duration dlower = Duration.between(lowertime, voorkeurtijd);
@@ -217,8 +217,8 @@ public class Restaurant implements ReservationOperations {
    */
   private boolean isInTijdslot(int time, int tijdslot) {
     if(tijdslot == -1 || !TimeNode.checkTime(time)) return false;
-    LocalTime tijdTijdslot = new TimeNode(tijdslot).getTime();
-    LocalTime tijdGewenst = new TimeNode(time).getTime();   
+    LocalTime tijdTijdslot = TimeNode.maakTijd(tijdslot);
+    LocalTime tijdGewenst = TimeNode.maakTijd(time);   
     return tijdTijdslot.getHour() == tijdGewenst.getHour();
   }
 
