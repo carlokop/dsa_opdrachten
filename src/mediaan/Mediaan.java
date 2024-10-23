@@ -1,4 +1,4 @@
-package opgave;
+package mediaan;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;

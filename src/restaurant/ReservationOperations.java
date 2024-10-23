@@ -1,4 +1,4 @@
-package opgave;
+package restaurant;
 public interface ReservationOperations {
   
   /**

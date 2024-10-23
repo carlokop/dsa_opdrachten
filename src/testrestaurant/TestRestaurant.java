@@ -1,4 +1,4 @@
-package test;
+package testrestaurant;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -6,10 +6,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 
-import opgave.Reservation;
-import opgave.Restaurant;
+import restaurant.Reservation;
+import restaurant.Restaurant;
+
+import org.junit.jupiter.api.BeforeEach;
 
 public class TestRestaurant {
 

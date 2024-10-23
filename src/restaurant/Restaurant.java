@@ -1,4 +1,4 @@
-package opgave;
+package restaurant;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -21,19 +21,19 @@ public class Restaurant implements ReservationOperations {
    * Maakt een restaurant aan en maakt instanties aan van alle tijdsloten waarop gereserveerd kan worden
    * @param start   start tijdstip eerste tijdslot
    * @param eind    eind tijdstip laatste tijdslot
-   * Complexiteit O(n) Dit heeft te maken met de for loop. n is hierbij het aantal tijdsloten tussen begin en eindtijd
+   * Complexiteit O(n log n) Dit heeft te maken met de for loop. n is hierbij het aantal tijdsloten tussen begin en eindtijd
    */
   public Restaurant(int start, int eind) {
     this.start_tijdslot = start;
     this.eind_tijdslot = eind;
     
     //maak alle tijdsloten
-    if(TimeNode.checkTime(start) && TimeNode.checkTime(eind)) {
-      LocalTime starttijd = TimeNode.maakTijd(start);
-      LocalTime eindtijd = TimeNode.maakTijd(eind);
+    if(Tijd.checkTime(start) && Tijd.checkTime(eind)) {
+      LocalTime starttijd = Tijd.maakTijd(start);
+      LocalTime eindtijd = Tijd.maakTijd(eind);
       
-      for(int i=starttijd.getHour(); i<= eindtijd.getHour(); i++) {
-        insert(i*100);
+      for(int i=starttijd.getHour(); i<= eindtijd.getHour(); i++) {  //O(n)
+        insert(i*100);  //O(log n)
       }
     }
     
@@ -48,7 +48,7 @@ public class Restaurant implements ReservationOperations {
    */
   @Override
   public void insert(int time)  {    
-    if(!TimeNode.checkTime(time)) { return;} //O(1)
+    if(!Tijd.checkTime(time)) { return;} //O(1)
     
     //tijdslot moet heel uur zijn afgerond naar beneden
     int tijdslot = time / 100 * 100;        //O(1)
@@ -66,7 +66,7 @@ public class Restaurant implements ReservationOperations {
    */
   @Override
   public Reservation search(int time) {
-    if(!TimeNode.checkTime(time)) { return null;}  //O(1)
+    if(!Tijd.checkTime(time)) { return null;}  //O(1)
     
     Reservation reservering = tijdsloten.get(time); //O(log n)
     return reservering;
@@ -93,7 +93,7 @@ public class Restaurant implements ReservationOperations {
   @Override
   public int findClosestAvailableTime(int time) {
     //onjuiste tijd
-    if(!TimeNode.checkTime(time)) { return -1; }
+    if(!Tijd.checkTime(time)) { return -1; }
     
     //Voor de opgegeveven tijd gelijk aan het tijdslot en er is geen reservering
     Reservation reservering = tijdsloten.get(time);            // O(log n)
@@ -117,9 +117,9 @@ public class Restaurant implements ReservationOperations {
     
     try {
       //dit zou allemaal in O(1) uitgevoerd moeten worden
-      LocalTime lowertime = TimeNode.maakTijd(lower);
-      LocalTime highertime = TimeNode.maakTijd(higher); 
-      LocalTime voorkeurtijd = TimeNode.maakTijd(time); 
+      LocalTime lowertime = Tijd.maakTijd(lower);
+      LocalTime highertime = Tijd.maakTijd(higher); 
+      LocalTime voorkeurtijd = Tijd.maakTijd(time); 
       
       //bereken aantal minuten verschil tussen tijden en voorkeur
       Duration dlower = Duration.between(lowertime, voorkeurtijd);
@@ -216,9 +216,9 @@ public class Restaurant implements ReservationOperations {
    * Complexiteit O(1)
    */
   private boolean isInTijdslot(int time, int tijdslot) {
-    if(tijdslot == -1 || !TimeNode.checkTime(time)) return false;
-    LocalTime tijdTijdslot = TimeNode.maakTijd(tijdslot);
-    LocalTime tijdGewenst = TimeNode.maakTijd(time);   
+    if(tijdslot == -1 || !Tijd.checkTime(time)) return false;
+    LocalTime tijdTijdslot = Tijd.maakTijd(tijdslot);
+    LocalTime tijdGewenst = Tijd.maakTijd(time);   
     return tijdTijdslot.getHour() == tijdGewenst.getHour();
   }
 
@@ -273,7 +273,7 @@ public class Restaurant implements ReservationOperations {
   @Override
   public void cancel(int time) {
     //onjuiste tijd
-    if(!TimeNode.checkTime(time)) { return; }
+    if(!Tijd.checkTime(time)) { return; }
     
     int tijdslot = time /100 * 100;     //O(1)
     Reservation res = search(tijdslot); //O(log n)

@@ -1,4 +1,4 @@
-package opgave;
+package restaurant;
 public class Reservation implements Comparable<Reservation> {
   
   private int tijd;

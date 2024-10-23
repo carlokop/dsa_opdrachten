@@ -1,14 +1,14 @@
-package opgave;
+package restaurant;
 
 import java.time.LocalTime;
 
 /**
- * Maakt tijdsobject
+ * Utility klasse die een integer valideert of dat een geldige tijd kan zijn en daar een localtime object van maakt
  */
-public final class TimeNode {
+public final class Tijd {
 
   //voorkomt instantiatie
-  private TimeNode() {}
+  private Tijd() {}
   
   /**
    * Maakt een TimeNode object wat een tijdobject maakt uit een int uumm
@@ -17,7 +17,7 @@ public final class TimeNode {
    * Complexiteit O(1) want we doorlopen hier geen lijsten en voeren allee wat sting opereraties uit die in constante tijd uitgevoerd kunnen worden
    */
   public static LocalTime maakTijd(int time) throws IllegalArgumentException {
-    if(!TimeNode.checkTime(time)) {
+    if(!Tijd.checkTime(time)) {
       throw new IllegalArgumentException("Tijdsformaat " + time + " (hhmm) kan niet worden omgezet in een geldige tijd");
     }
     
