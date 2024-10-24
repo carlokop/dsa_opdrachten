@@ -1,6 +1,7 @@
 package kunstvoorwerpen;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -10,17 +11,18 @@ import java.util.TreeSet;
  * Implementatie van ArtifactOrdering Interface met kwadratische tijdscomplexiteit 
  * voor de implementatie van de  getUnbeatedArtifacts methode.
  */
-public class ArtifactRetrievalQuadraticComplexity implements ArtifactOrdering{
+public class ArtifactRetrievalQuadraticComplexity extends AbstractArtifactRetrieval implements ArtifactOrdering{
 	// See: https://en.wikipedia.org/wiki/Multi-objective_optimization
 
 	
-	public ArtifactRetrievalQuadraticComplexity() {}
+	public ArtifactRetrievalQuadraticComplexity() {super();}
 		
 	/***
 	 *  Vindt de set van "onovertroffen" kunstvoorwerpen uit de lijst van kunstvoorwerpen.
 	 *  Dit zijn de kunstvoorwerpen (artifacts) a_u waarvoor er geen ander kunstvoorwerp bestaat a_x
 	 *  in de lijst zodat
 	 *  
+	 *  dit klopt niet!!!
 	 *  (a_x.price >= a_u.price >= && a_x.value >= a_u.value) && 
 	 *  (a_x.price > a_u.price >= || a_x.value > a_u.value)
 	 *  
@@ -31,6 +33,29 @@ public class ArtifactRetrievalQuadraticComplexity implements ArtifactOrdering{
 	public Set<Artifact> getUnbeatedArtifacts(Set<Artifact> artifacts){
 		//TODO: FIXME
 		Set<Artifact> result = new HashSet<>();
+		
+		//O(n2)
+	    for (Artifact artifact : artifacts) {
+	        boolean isOvertroffen = false;  // Veronderstel dat het artifact onovertroffen is
+
+	        for (Artifact other : artifacts) {
+	 
+	            //Controleer of het andere artifact het huidige artifact overtreft
+	            if(
+	                (other.getPrice() < artifact.getPrice() && other.getValue() >= artifact.getValue())
+	               && (other.getPrice() < artifact.getPrice() || other.getValue() > artifact.getValue())
+	              ) {
+	               isOvertroffen = true;
+	               break;  //stop de innerloop item is overtroffen
+	            };
+	        }
+
+	        //Voeg onovertroffen artifact toe aan de hashset
+	        if (!isOvertroffen) {
+	            result.add(artifact);
+	        }
+	    }
+	    		
 		return result;
 	}
 	
@@ -47,6 +72,7 @@ public class ArtifactRetrievalQuadraticComplexity implements ArtifactOrdering{
 	 *  
 	 *   Gegeven een input lijst van grootte N, moet deze implementatie een tijdscomplexiteit van
 	 *   O(n log n) hebben. 
+	 *   
 	 */
 	@Override
 	public SortedSet<Artifact> getScoreOrderedArtiacts(Set<Artifact> artifacts, int priceWeight, int valueWeight) {

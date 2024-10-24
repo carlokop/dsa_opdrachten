@@ -38,6 +38,22 @@ public class Artifact{
 		return this.value;
 	}
 	
+	/**
+	 * Bepaald de score van het Artifact 
+	 * @param weightPrice  Gewicht van de prijs 
+	 * @param weightValue  Gewicht van de waarde
+	 * @return score
+	 */
+	public double bepaalScore(double weightPrice, double weightValue) {
+      return weightPrice * price + weightValue * value;
+    }
+	
+	public String toStringKeyValues() {
+	  return "(" + this.price + ", " + this.value + ")";
+	}
+  
+	
+
 	public String toString() {
 		String result = "\n<ARTIFACT>";
 		result += "id: " + this.id + ", ";
