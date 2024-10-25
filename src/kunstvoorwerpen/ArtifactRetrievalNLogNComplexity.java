@@ -1,19 +1,12 @@
 package kunstvoorwerpen;
-
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import datastructures.BucketSortArtifact;
-import datastructures.RadixArtifact;
 
 
 
@@ -52,6 +45,7 @@ public class ArtifactRetrievalNLogNComplexity extends AbstractArtifactRetrieval 
 		}
 		
 		//sorteer priceList op basis van prijs laag naar hoog en waarde van hoog naar laag
+		//O(n)
         RadixArtifact.radixSort(priceList, true, true);
         RadixArtifact.radixSort(priceList, false, false);
 
@@ -72,12 +66,13 @@ public class ArtifactRetrievalNLogNComplexity extends AbstractArtifactRetrieval 
         }
 
         //doorloop de gesorteerde lijst
+        //O(n log n)
         for(int i=1; i<priceList.size(); i++) {    //O(n)          
           Artifact artifact = priceList.get(i);
          
           //in de reeds gesorteerde priceList is er een goede kans dat het vorige artifact op de array dit artifact overtreft
           //als het vorige element dit element overtreft zijn we in O(1) klaar en hoeven we niet verder te zoeken
-          if(overtroffen(priceList.get(i-1), artifact)) {
+          if(dominates(priceList.get(i-1), artifact)) {
             result.add(priceList.get(0));
             break;
           }
@@ -91,17 +86,50 @@ public class ArtifactRetrievalNLogNComplexity extends AbstractArtifactRetrieval 
            
             Artifact other = priceList.get(index-1);
 
-            if(!overtroffen(artifact, other)) {
+            if(!dominates(artifact, other)) {
               result.add(artifact);
             }
 
           }
-          
         
         }
        
 		return result;
 	}
+	
+	/**
+	   * Zoekt naar een Artifact in een lijst en geeft de index
+	   * @param list     te doorzoeken lijst moet op waarde gesorteerd zijn
+	   * @param start    start index
+	   * @param end      end index
+	   * @param doel     het te vinden artifact
+	   * @return         de index van het gevonden artifect of -1 al niet gevonden
+	   */
+	  public int binarySearchValueSortedArtifact(List<Artifact> list, int start, int end, Artifact doel) {  
+	    //niet gevonden
+	    if(start > end) {
+	      return -1;
+	    }
+	    
+	    int mid = start + (end - start) / 2;
+	    Artifact artifact = list.get(mid);
+
+	    //gevonden
+	    if(doel.equals(artifact)) {
+	      return mid;
+	    }
+	    
+	    //zoek naar value
+	    if(doel.getValue() >= artifact.getValue() || (doel.getValue() == artifact.getValue() && doel.getPrice() < artifact.getPrice())) {
+	      //zoek links
+	      return binarySearchValueSortedArtifact(list, start, mid-1, doel);
+	    } else {
+	      //zoek rechts
+	      return binarySearchValueSortedArtifact(list, mid+1, end, doel);
+	    }
+	    
+	      
+	  }
 	
 	
 	
@@ -118,12 +146,27 @@ public class ArtifactRetrievalNLogNComplexity extends AbstractArtifactRetrieval 
 	 *  
 	 *   Gegeven een input lijst van grootte N, moet deze implementatie een tijdscomplexiteit van
 	 *   O(n log n) hebben. 
+	 *   
+	 *   Deze methode lijkt hetzelfde als die in de klasse ArtifactRetrievalQuadraticComplexity en is een kopie daarvan
 	 */
 	@Override
 	public SortedSet<Artifact> getScoreOrderedArtiacts(Set<Artifact> artifacts, int priceWeight, int valueWeight) {
-		SortedSet<Artifact> result = new TreeSet<>();
-		//TODO: FIXME
-		return result;
+	//handler voor sorteren op basis van de score
+      class ArtifactComparator implements Comparator<Artifact> {
+        @Override
+        public int compare(Artifact artifact, Artifact other) {
+            double score_artifact = priceWeight * artifact.getPrice() + valueWeight * artifact.getValue();
+            double score_other = priceWeight * other.getPrice() + valueWeight * other.getValue();
+            return Double.compare(score_other, score_artifact); 
+        }
+      }
+
+      SortedSet<Artifact> result = new TreeSet<>(new ArtifactComparator());
+
+      // Voeg alle artifacts toe aan de gesorteerde set
+      result.addAll(artifacts);
+    
+      return result;
 	}
 	
 
@@ -133,29 +176,19 @@ public class ArtifactRetrievalNLogNComplexity extends AbstractArtifactRetrieval 
 	 */
 	public static void main(String[] args)
 	{
-//		 Artifacts separated by ";" formatted as: artifactID,price,value	
-//		String solutionsString = "0,0,9;1,1,10;2,2,11;3,3,5;4,4,4";
-//		Set<Artifact> artifacts = Artifact.createArtifactsFromArtifactsString(solutionsString);
-//		ArtifactRetrievalQuadraticComplexity artifactRetrieval = new ArtifactRetrievalQuadraticComplexity();
-//		 Set<Artifact> unbeatedArtifacts = artifactRetrieval.getUnbeatedArtifacts(artifacts);
-		 //System.out.println("\nUnbeated Artifacts: " + unbeatedArtifacts);
+		//Artifacts separated by ";" formatted as: artifactID,price,value	
+		String solutionsString = "0,0,9;1,1,10;2,2,11;3,3,5;4,4,4";
+		Set<Artifact> artifacts = Artifact.createArtifactsFromArtifactsString(solutionsString);
+		ArtifactRetrievalQuadraticComplexity artifactRetrieval = new ArtifactRetrievalQuadraticComplexity();
+		 Set<Artifact> unbeatedArtifacts = artifactRetrieval.getUnbeatedArtifacts(artifacts);
+		 System.out.println("\nUnbeated Artifacts: " + unbeatedArtifacts);
 		
 	 
-//		 SortedSet<Artifact> scoredArtifacts = 
-//				 artifactRetrieval.getScoreOrderedArtiacts(artifacts, 1, 10);
-		 //System.out.println("\nWeight scored artifacts: " + scoredArtifacts);
+		 SortedSet<Artifact> scoredArtifacts = 
+				 artifactRetrieval.getScoreOrderedArtiacts(artifacts, 1, 10);
+		 System.out.println("\nWeight scored artifacts: " + scoredArtifacts);
 		 
-	     Set<Artifact> artifacts = new HashSet<>();
-	     artifacts.add(new Artifact(0,0,2));
-	     artifacts.add(new Artifact(0,0,9));
-	     artifacts.add(new Artifact(1,1,10));
-	     artifacts.add(new Artifact(2,2,11));
-	     artifacts.add(new Artifact(3,3,5));
-	     artifacts.add(new Artifact(4,4,4));
 
-	  
-	  ArtifactRetrievalNLogNComplexity a = new ArtifactRetrievalNLogNComplexity();
-	  a.getUnbeatedArtifacts(artifacts);
 	}
 
 

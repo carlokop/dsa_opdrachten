@@ -1,9 +1,7 @@
-package datastructures;
+package kunstvoorwerpen;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
-import kunstvoorwerpen.Artifact;
 
 /**
  * Sorteeraglorithe Radix sort

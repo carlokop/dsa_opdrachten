@@ -1,5 +1,6 @@
 package kunstvoorwerpen;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -41,7 +42,7 @@ public class ArtifactRetrievalQuadraticComplexity extends AbstractArtifactRetrie
 	        for (Artifact other : artifacts) {
 	 
 	            //Controleer of het andere artifact het huidige artifact overtreft
-	            if(((AbstractArtifactRetrieval) this).overtroffen(artifact,other)) {
+	            if(((AbstractArtifactRetrieval) this).dominates(artifact,other)) {
 	               isOvertroffen = true;
 	               break;  //stop de innerloop item is overtroffen
 	            };
@@ -70,12 +71,29 @@ public class ArtifactRetrievalQuadraticComplexity extends AbstractArtifactRetrie
 	 *   Gegeven een input lijst van grootte N, moet deze implementatie een tijdscomplexiteit van
 	 *   O(n log n) hebben. 
 	 *   
+	 *   Deze methode lijkt hetzelfde als die in de klasse ArtifactRetrievalNLogNComplexity en is een kopie daarvan
+	 *   
 	 */
 	@Override
 	public SortedSet<Artifact> getScoreOrderedArtiacts(Set<Artifact> artifacts, int priceWeight, int valueWeight) {
-		SortedSet<Artifact> result = new TreeSet<>();
-		//TODO: FIXME
-		return result;
+               
+	  //handler voor sorteren op basis van de score
+	  class ArtifactComparator implements Comparator<Artifact> {
+        @Override
+        public int compare(Artifact artifact, Artifact other) {
+            double score_artifact = priceWeight * artifact.getPrice() + valueWeight * artifact.getValue();
+            double score_other = priceWeight * other.getPrice() + valueWeight * other.getValue();
+            return Double.compare(score_other, score_artifact); 
+        }
+      }
+
+      SortedSet<Artifact> result = new TreeSet<>(new ArtifactComparator());
+
+      // Voeg alle artifacts toe aan de gesorteerde set
+      result.addAll(artifacts);  //O(n log n) 
+    
+      return result;
+    
 	}
 	
 
@@ -95,7 +113,7 @@ public class ArtifactRetrievalQuadraticComplexity extends AbstractArtifactRetrie
 		
 		 SortedSet<Artifact> scoredArtifacts = 
 				 artifactRetrieval.getScoreOrderedArtiacts(artifacts, 1, 10);
-		 //System.out.println("\nWeight scored artifacts: " + scoredArtifacts);
+		 System.out.println("\nWeight scored artifacts: " + scoredArtifacts);
 	}
 
 
