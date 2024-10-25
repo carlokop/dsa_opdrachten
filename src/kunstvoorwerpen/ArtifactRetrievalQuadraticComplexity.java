@@ -41,10 +41,7 @@ public class ArtifactRetrievalQuadraticComplexity extends AbstractArtifactRetrie
 	        for (Artifact other : artifacts) {
 	 
 	            //Controleer of het andere artifact het huidige artifact overtreft
-	            if(
-	                (other.getPrice() < artifact.getPrice() && other.getValue() >= artifact.getValue())
-	               && (other.getPrice() < artifact.getPrice() || other.getValue() > artifact.getValue())
-	              ) {
+	            if(((AbstractArtifactRetrieval) this).overtroffen(artifact,other)) {
 	               isOvertroffen = true;
 	               break;  //stop de innerloop item is overtroffen
 	            };
@@ -98,7 +95,7 @@ public class ArtifactRetrievalQuadraticComplexity extends AbstractArtifactRetrie
 		
 		 SortedSet<Artifact> scoredArtifacts = 
 				 artifactRetrieval.getScoreOrderedArtiacts(artifacts, 1, 10);
-		 System.out.println("\nWeight scored artifacts: " + scoredArtifacts);
+		 //System.out.println("\nWeight scored artifacts: " + scoredArtifacts);
 	}
 
 

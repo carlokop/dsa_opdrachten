@@ -6,7 +6,7 @@ import java.util.Set;
 /***
  * Artifact/kunstvoorwerp klasse
  */
-public class Artifact{
+public class Artifact implements Comparable<Artifact> {
 	/** D ID van het kunstvoorwerp*/
 	private final int id; 
 	/** De prijs van het kunstvoorwerp*/
@@ -70,6 +70,7 @@ public class Artifact{
 			Artifact artifact2 = (Artifact) object;
 			return this.getID() == artifact2.getID();			
 		}
+		System.out.println("geen object van" + object.getClass());
 		return false;
 	
 	}
@@ -102,4 +103,17 @@ public class Artifact{
 	
 		return artifacts;
 	}
+
+  @Override
+  public int compareTo(Artifact other) {
+    //Bij gelijke prijs geef vergelijk op artifact met hoogste value
+    if(Double.compare(this.price,other.getPrice()) == 0) {
+      return Double.compare(other.getValue(),this.getValue());
+    } else {
+      //vergelijk op prijs
+      return Double.compare(this.price,other.getPrice());
+    }
+  }
+
+  
 }
