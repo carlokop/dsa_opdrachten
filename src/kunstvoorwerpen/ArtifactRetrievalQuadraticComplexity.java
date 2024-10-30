@@ -2,7 +2,6 @@ package kunstvoorwerpen;
 
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -12,7 +11,7 @@ import java.util.TreeSet;
  * Implementatie van ArtifactOrdering Interface met kwadratische tijdscomplexiteit 
  * voor de implementatie van de  getUnbeatedArtifacts methode.
  */
-public class ArtifactRetrievalQuadraticComplexity extends AbstractArtifactRetrieval implements ArtifactOrdering{
+public class ArtifactRetrievalQuadraticComplexity  implements ArtifactOrdering {
 	// See: https://en.wikipedia.org/wiki/Multi-objective_optimization
 
 	
@@ -42,7 +41,7 @@ public class ArtifactRetrievalQuadraticComplexity extends AbstractArtifactRetrie
 	        for (Artifact other : artifacts) {
 	 
 	            //Controleer of het andere artifact het huidige artifact overtreft
-	            if(((AbstractArtifactRetrieval) this).dominates(artifact,other)) {
+	            if(Artifact.dominates(artifact,other)) {
 	               isOvertroffen = true;
 	               break;  //stop de innerloop item is overtroffen
 	            };

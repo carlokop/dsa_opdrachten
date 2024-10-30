@@ -1,12 +1,13 @@
 package kunstvoorwerpen;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
 /***
  * Artifact/kunstvoorwerp klasse
  */
-public class Artifact  {
+public class Artifact   {
 	/** D ID van het kunstvoorwerp*/
 	private final int id; 
 	/** De prijs van het kunstvoorwerp*/
@@ -71,6 +72,26 @@ public class Artifact  {
 		return this.id;
 	}
 	
+	 /**
+     * @param solutionOne     artifact basis
+     * @param solutionTwo     artifact om te testen 
+     * @return true als solutionOne wordt overtroffen door solutionTwo
+     * O(1)
+     */
+    public static boolean dominates(Artifact artifact, Artifact other) {
+      double one_price = artifact.getPrice();
+      double one_value = artifact.getValue();
+      double two_price = other.getPrice();
+      double two_value = other.getValue();
+      
+      return (
+          two_price <= one_price && two_value >= one_value)
+          && (two_price < one_price || two_value > one_value
+       );
+      
+    }
+  
+	
 	/***
 	 * Dit is een convenience methode voor het snel creëren van een set artifacts.
 	 * @param pairsString
@@ -94,6 +115,26 @@ public class Artifact  {
 	
 		return artifacts;
 	}
+		 
+	/**
+	 * Comparator die eerst prijs vergelijkt van laag naar hoog en bij gelijke prijs de waarde van hoog naar laag
+	 * Als hiermee gesorteerd wordt komt het artifact met de laagste prijs eerst
+	 * Bij gelijke prijs het artifact met de hoogste waarde
+	 */
+    public static final Comparator<Artifact> PRIJS_WAARDE_COMPARATOR = new Comparator<Artifact>() {
+        @Override
+        public int compare(Artifact artifact, Artifact other) {
+            int prijsVergelijking = Double.compare(artifact.getPrice(), other.getPrice());
+            if (prijsVergelijking != 0) {
+                return prijsVergelijking; // Lager is beter
+            }
+            // Bij gelijke prijs, vergelijk op waarde van hoog naar laag
+            return Double.compare(other.getValue(), artifact.getValue()); // Omgekeerd, zodat hoger beter is
+        }
+    };
+    
+
+	
 
 
 

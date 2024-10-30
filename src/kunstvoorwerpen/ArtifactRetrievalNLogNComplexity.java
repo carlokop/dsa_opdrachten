@@ -1,8 +1,7 @@
 package kunstvoorwerpen;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -14,12 +13,14 @@ import java.util.TreeSet;
  * Implementatie van ArtifactOrdering Interface met O(n log n) tijdscomplexiteit 
  * voor de implementatie van de  getUnbeatedArtifacts methode.
  */
-public class ArtifactRetrievalNLogNComplexity extends AbstractArtifactRetrieval implements ArtifactOrdering {
+public class ArtifactRetrievalNLogNComplexity implements ArtifactOrdering {
 	// See: https://en.wikipedia.org/wiki/Multi-objective_optimization
 
 	
 	public ArtifactRetrievalNLogNComplexity() {super();}
 		
+
+	
 	/***
 	 *  Vindt de set van "onovertroffen" kunstvoorwerpen uit de lijst van kunstvoorwerpen.
 	 *  Dit zijn de kunstvoorwerpen (artifacts) a_u waarvoor er geen ander kunstvoorwerp bestaat a_x
@@ -32,106 +33,50 @@ public class ArtifactRetrievalNLogNComplexity extends AbstractArtifactRetrieval 
 	 *   O(n log n) hebben. 
 	 */
 	@Override
-	public Set<Artifact> getUnbeatedArtifacts(Set<Artifact> artifacts){
-		//TODO: FIXME
-		Set<Artifact> result = new HashSet<>();
-		ArrayList<Artifact> priceList = new ArrayList<>();
-		ArrayList<Artifact> valueSortedList = new ArrayList<>();       
+	public Set<Artifact> getUnbeatedArtifacts(Set<Artifact> artifacts) { 
+
+		Set<Artifact> result = new HashSet<>(); 
 		
-		//zet artifacts op beide arrays
-		for (Artifact artifact : artifacts) {     //O(n)
-		  priceList.add(artifact);
-		  valueSortedList.add(artifact);
-		}
-		
-		//sorteer priceList op basis van prijs laag naar hoog en waarde van hoog naar laag
-		//O(n)
-        RadixArtifact.radixSort(priceList, true, true);
-        RadixArtifact.radixSort(priceList, false, false);
-
-        //sorteer valueSortedList op basis van waarde hoog naar laag en price van lag naar hoog
-        RadixArtifact.radixSort(valueSortedList, false, false);
-        RadixArtifact.radixSort(valueSortedList, true, true);
+  	    //O(n log n)	
+  	    PriorityQueue<Artifact> pq = new PriorityQueue<>(Artifact.PRIJS_WAARDE_COMPARATOR);
+        pq.addAll(artifacts);
         
-
+        /**
+         * Als we artifacts in lijst zetten beginnen we met het artifact met de laagste prijs en de hoogste waarde
+         * Als de prijs gelijk is met de hoogste waarde eerst
+         * 
+         * Vanwege de sortering kunnen alleen artifacts links van gegeven artifact het artifact overtreffen
+         * Door het bijhouden van de reeds hoogste waarde van alle artifacts links van gegeven artifact wordt een artifact niet overwonnen 
+         * als waarde groter is dan gegeven max
+         */        
+        //met hulp van de dominates methode
+        Artifact maxValueArtifact = null;
+        while (!pq.isEmpty()) {                    //O(n)
+          Artifact artifact = pq.poll();           //O(log n)
+          if(maxValueArtifact == null || !Artifact.dominates(artifact, maxValueArtifact)) {  //O(1)
+            result.add(artifact);                  //(O log n)
+            maxValueArtifact = artifact;
+          }
+       }
         
-        //het element met de laagste prijd en hoogste waarde is sowieso onoverwonnen
-        if(priceList.size() >= 1) {
-          result.add(priceList.get(0));
-        }
-        //Het eerste element op de op waarde gesorteede lijst kan ook niet overwonnen zijn
-        //De hashset staat geen duplicaten toe dus als dit hetzelfde artifact is als eerst element in de sortedlist wordt dit overgeslagen
-        if(valueSortedList.size() >= 1) {
-          result.add(valueSortedList.get(0));
-        }
-
-        //doorloop de gesorteerde lijst
+        //op deze manier hebben we de dominates methode niet nodig. 
+        //Zelfde complexiteit maar een paar constante operaties sneller
         //O(n log n)
-        for(int i=1; i<priceList.size(); i++) {    //O(n)          
-          Artifact artifact = priceList.get(i);
-         
-          //in de reeds gesorteerde priceList is er een goede kans dat het vorige artifact op de array dit artifact overtreft
-          //als het vorige element dit element overtreft zijn we in O(1) klaar en hoeven we niet verder te zoeken
-          if(dominates(priceList.get(i-1), artifact)) {
-            result.add(priceList.get(0));
-            break;
-          }
-          
-          //zoek artifact in de op waarde gesorteerde lijst
-          int end = valueSortedList.size()-1;
-          int index = binarySearchValueSortedArtifact(valueSortedList, 0 ,end, artifact);  //O(log n)                
-          
-          //als het artifact overtroffen is moet een element dat het artifact overtreft direct links ernaast op de array staan
-          if(index >= 1) { //
-           
-            Artifact other = priceList.get(index-1);
-
-            if(!dominates(artifact, other)) {
-              result.add(artifact);
-            }
-
-          }
+//        double maxValue = Double.NEGATIVE_INFINITY;
+//        while (!pq.isEmpty()) {                     //O(n)
+//            Artifact artifact = pq.poll();          //O(log n)
+//            if (artifact.getValue() > maxValue) {
+//              result.add(artifact);                 //(O log n)
+//                maxValue = artifact.getValue(); 
+//            }
+//        }
         
-        }
-       
-		return result;
+  
+        return result;
+
 	}
 	
-	/**
-	   * Zoekt naar een Artifact in een lijst en geeft de index
-	   * @param list     te doorzoeken lijst moet op waarde gesorteerd zijn
-	   * @param start    start index
-	   * @param end      end index
-	   * @param doel     het te vinden artifact
-	   * @return         de index van het gevonden artifect of -1 al niet gevonden
-	   */
-	  public int binarySearchValueSortedArtifact(List<Artifact> list, int start, int end, Artifact doel) {  
-	    //niet gevonden
-	    if(start > end) {
-	      return -1;
-	    }
-	    
-	    int mid = start + (end - start) / 2;
-	    Artifact artifact = list.get(mid);
 
-	    //gevonden
-	    if(doel.equals(artifact)) {
-	      return mid;
-	    }
-	    
-	    //zoek naar value
-	    if(doel.getValue() >= artifact.getValue() || (doel.getValue() == artifact.getValue() && doel.getPrice() < artifact.getPrice())) {
-	      //zoek links
-	      return binarySearchValueSortedArtifact(list, start, mid-1, doel);
-	    } else {
-	      //zoek rechts
-	      return binarySearchValueSortedArtifact(list, mid+1, end, doel);
-	    }
-	    
-	      
-	  }
-	
-	
 	
 	
 	/***
@@ -187,7 +132,7 @@ public class ArtifactRetrievalNLogNComplexity extends AbstractArtifactRetrieval 
 		 SortedSet<Artifact> scoredArtifacts = 
 				 artifactRetrieval.getScoreOrderedArtiacts(artifacts, 1, 10);
 		 System.out.println("\nWeight scored artifacts: " + scoredArtifacts);
-		 
+	 
 
 	}
 
