@@ -13,6 +13,7 @@ public final class Tijd {
   /**
    * Maakt een TimeNode object wat een tijdobject maakt uit een int uumm
    * @param time    tijd in uumm
+   * @return LocalTime met gegeven tijd
    * @throws IllegalArgumentException
    * Complexiteit O(1) want we doorlopen hier geen lijsten en voeren allee wat sting opereraties uit die in constante tijd uitgevoerd kunnen worden
    */

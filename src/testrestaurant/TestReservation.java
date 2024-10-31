@@ -7,8 +7,14 @@ import org.junit.Test;
 
 import restaurant.Reservation;
 
+/**
+ * Tests de reservering
+ */
 public class TestReservation {
   
+  /**
+   * Tests de equals methode
+   */
   @Test
   public void equalsTest() {
     //happy
@@ -27,6 +33,9 @@ public class TestReservation {
     
   }
   
+  /**
+   * Tests de compareto methode
+   */
   @Test
   public void equalsCompareTo() {
     Reservation r = new Reservation(1000, "Carlo");

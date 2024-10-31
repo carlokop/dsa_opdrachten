@@ -111,8 +111,8 @@ public class Artifact   {
 	 /**
 	  * Vergelijkt twee artifacts en geeft true als het artifact het artifact other overtreft
 	  * Prijs en value moeten doubles zijn tussen -Double.MAX_VALUE en Double.MAX_VALUE en geeft anders false terug
-     * @param solutionOne     artifact basis
-     * @param solutionTwo     artifact om te testen 
+     * @param artifact     artifact basis
+     * @param other     artifact om te testen 
      * @return true als solutionOne wordt overtroffen door solutionTwo
      * O(1)
      */
@@ -139,8 +139,8 @@ public class Artifact   {
 	
 	/***
 	 * Dit is een convenience methode voor het snel creëren van een set artifacts.
-	 * @param pairsString
-	 * @return
+	 * @param pairsString  string representatie voor artifacts komma gescheiden
+	 * @return een set met artifacts
 	 */
 	public static Set<Artifact> createArtifactsFromArtifactsString(String pairsString) {
 		 Set<Artifact> artifacts = new HashSet<>();

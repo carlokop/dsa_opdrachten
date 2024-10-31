@@ -34,7 +34,7 @@ public class ArtifactRetrievalNLogNComplexity implements ArtifactOrdering {
 	 *   Gegeven een input lijst van grootte N, moet deze implementatie een tijdscomplexiteit van
 	 *   O(n log n) hebben. 
 	 *   
-	 *   @param de art van artifacts 
+	 *   @param artifacts de art van artifacts 
 	 *   @return de set van onovertroffen artifacts
 	 *   Complexiteit theta(n log n) doordat er 2x een th(n log n) actie doorlopen wordt
 	 */

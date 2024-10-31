@@ -12,15 +12,24 @@ import restaurant.Restaurant;
 
 import org.junit.jupiter.api.BeforeEach;
 
+/**
+ * Tests voor het restaurant
+ */
 public class TestRestaurant {
 
   private Restaurant r;
   
+  /**
+   * Maakt een nieuw restaurant voor iedere test
+   */
   @BeforeEach
   public void setUp() {
     r = new Restaurant(800,2200);
   }
   
+  /**
+   * Test het toevoegen van tijdsloten
+   */
   @Test
   public void TestInsert() { 
     
@@ -45,6 +54,9 @@ public class TestRestaurant {
      
   }
   
+  /**
+   * Test of dubbele tijdsloten worden overgeslagen
+   */
   @Test
   public void DubbeleInsertTest() { 
     
@@ -56,7 +68,9 @@ public class TestRestaurant {
    
   }
  
-  
+  /**
+   * Tests een boeking
+   */
   @Test
   public void TestBook() {
    
@@ -85,6 +99,9 @@ public class TestRestaurant {
 
   }
   
+  /**
+   * Tests het zoeken naar een reservering
+   */
   @Test 
   public void searchTest() {
     
@@ -99,6 +116,9 @@ public class TestRestaurant {
     assertNull(res);
   }
   
+  /**
+   * Tests het vinden van het dichtsbijzijnde beschikbare tijdslot
+   */
   @Test 
   public void searchClosestAvailableTest() {
 
@@ -142,6 +162,9 @@ public class TestRestaurant {
     
   }
   
+  /**
+   * Test het annuleren van een boeking
+   */
   @Test
   public void cancelTest() {
     r.book(1420, "carlo");

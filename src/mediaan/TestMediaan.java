@@ -9,15 +9,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests de mediaan
+ */
 public class TestMediaan {
   
   Mediaan m;
   
+  /**
+   * Initialiseert mediaan voor iedere test
+   */
   @BeforeEach
   void setup() {
     m = new Mediaan();
   }
   
+  /**
+   * Test de constructot
+   */
   @Test
   public void TestMediaanConstruct() {
     assertNotNull(m);
@@ -25,6 +34,9 @@ public class TestMediaan {
     assertEquals(0,m.getU().size());
   }
   
+  /**
+   * Tests het toevoegen
+   */
   @Test
   public void TestAdd() {
     //lege lijst
@@ -105,6 +117,9 @@ public class TestMediaan {
   
   }
   
+  /**
+   * Tests het berekenen van de mediaan
+   */
   @Test
   public void TestCalcMediaan() {
     //lege lijst

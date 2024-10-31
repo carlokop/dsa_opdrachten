@@ -10,7 +10,11 @@ import java.util.SortedSet;
  *  gewichten voor prijs en waarde.
  */
 public interface ArtifactOrdering { 	
-	/** Vind en retourneer de set onovertroffen artifacts*/
+	/** Vind en retourneer de set onovertroffen artifacts
+	 * 
+     *   @param artifacts de art van artifacts 
+     *   @return de set van onovertroffen artifacts
+     */
 	public Set<Artifact> getUnbeatedArtifacts(Set<Artifact> artifacts);
 	
 	/** 
@@ -18,6 +22,10 @@ public interface ArtifactOrdering {
 	 * SortedSet geordend op score, aflopend. (Dit betekent dat het artifact met de hoogste score 
 	 * als eerste wordt geretourneerd uit de SortedSet.)
 	 * 
+	 *   @param artifacts  de art van artifacts 
+     *   @param priceWeight de weging van de prijs
+     *   @param valueWeight de weging van de waarde
+     *   @return de gesorteerde set artifacts
 	 * */
 	public SortedSet<Artifact> getScoreOrderedArtiacts(Set<Artifact> artifacts, int priceWeight, int valueWeight);
 }

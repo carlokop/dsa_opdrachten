@@ -11,8 +11,14 @@ import org.junit.Test;
 
 import restaurant.Tijd;
 
-public class TestTimeNode {
+/**
+ * Test de tijdklasse
+ */
+public class TestTijd {
 
+  /**
+   * Tests of het maken van een tijdsobject goed gaat
+   */
   @Test
   public void maakTijdTest() {
     LocalTime tijd = Tijd.maakTijd(100);
@@ -33,6 +39,9 @@ public class TestTimeNode {
     
   }
   
+  /**
+   * Tests het valideren van de tijd
+   */
   @Test
   public void checkTimeTest() {
     //alleen minuten
