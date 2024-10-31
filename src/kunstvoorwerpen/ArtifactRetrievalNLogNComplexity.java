@@ -112,7 +112,7 @@ public class ArtifactRetrievalNLogNComplexity implements ArtifactOrdering {
 	//handler voor sorteren op basis van de score
       class ArtifactComparator implements Comparator<Artifact> {
         @Override
-        public int compare(Artifact artifact, Artifact other) {
+        public int compare(Artifact artifact, Artifact other) {  //(1)
             double score_artifact = priceWeight * artifact.getPrice() + valueWeight * artifact.getValue();
             double score_other = priceWeight * other.getPrice() + valueWeight * other.getValue();
             return Double.compare(score_other, score_artifact); 
@@ -122,7 +122,7 @@ public class ArtifactRetrievalNLogNComplexity implements ArtifactOrdering {
       SortedSet<Artifact> result = new TreeSet<>(new ArtifactComparator());
 
       // Voeg alle artifacts toe aan de gesorteerde set
-      result.addAll(artifacts);
+      result.addAll(artifacts);  //th(n log n)
     
       return result;
 	}

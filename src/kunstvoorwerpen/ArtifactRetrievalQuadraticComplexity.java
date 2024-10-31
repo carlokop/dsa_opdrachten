@@ -87,7 +87,7 @@ public class ArtifactRetrievalQuadraticComplexity  implements ArtifactOrdering {
 	  //handler voor sorteren op basis van de score
 	  class ArtifactComparator implements Comparator<Artifact> {
         @Override
-        public int compare(Artifact artifact, Artifact other) {
+        public int compare(Artifact artifact, Artifact other) {     //O(1)
             double score_artifact = priceWeight * artifact.getPrice() + valueWeight * artifact.getValue();
             double score_other = priceWeight * other.getPrice() + valueWeight * other.getValue();
             return Double.compare(score_other, score_artifact); 
