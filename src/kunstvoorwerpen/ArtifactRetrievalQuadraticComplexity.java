@@ -14,7 +14,10 @@ import java.util.TreeSet;
 public class ArtifactRetrievalQuadraticComplexity  implements ArtifactOrdering {
 	// See: https://en.wikipedia.org/wiki/Multi-objective_optimization
 
-	
+  
+	/**
+	 * Maakt een ArtifactRetrievalQuadraticComplexity
+	 */
 	public ArtifactRetrievalQuadraticComplexity() {super();}
 		
 	/***
@@ -35,10 +38,10 @@ public class ArtifactRetrievalQuadraticComplexity  implements ArtifactOrdering {
 		Set<Artifact> result = new HashSet<>();
 		
 		//O(n2)
-	    for (Artifact artifact : artifacts) {
+	    for (Artifact artifact : artifacts) {  //O(n)
 	        boolean isOvertroffen = false;  // Veronderstel dat het artifact onovertroffen is
 
-	        for (Artifact other : artifacts) {
+	        for (Artifact other : artifacts) {  //O(n)
 	 
 	            //Controleer of het andere artifact het huidige artifact overtreft
 	            if(Artifact.dominates(artifact,other)) {
@@ -69,9 +72,14 @@ public class ArtifactRetrievalQuadraticComplexity  implements ArtifactOrdering {
 	 *  
 	 *   Gegeven een input lijst van grootte N, moet deze implementatie een tijdscomplexiteit van
 	 *   O(n log n) hebben. 
-	 *   
-	 *   Deze methode lijkt hetzelfde als die in de klasse ArtifactRetrievalNLogNComplexity en is een kopie daarvan
-	 *   
+
+     *   @param artifacts  de art van artifacts 
+     *   @param priceWeight de weging van de prijs
+     *   @param valueWeight de weging van de waarde
+     *   @return de gesorteerde set artifacts
+     *   
+     *   Deze methode lijkt hetzelfde als die in de klasse ArtifactRetrievalQuadraticComplexity en is een kopie daarvan
+     *   In deze methode gebru
 	 */
 	@Override
 	public SortedSet<Artifact> getScoreOrderedArtiacts(Set<Artifact> artifacts, int priceWeight, int valueWeight) {

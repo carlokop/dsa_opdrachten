@@ -16,7 +16,9 @@ import java.util.TreeSet;
 public class ArtifactRetrievalNLogNComplexity implements ArtifactOrdering {
 	// See: https://en.wikipedia.org/wiki/Multi-objective_optimization
 
-	
+	/**
+	 * maakt een ArtifactRetrievalNLogNComplexity
+	 */
 	public ArtifactRetrievalNLogNComplexity() {super();}
 		
 
@@ -31,15 +33,19 @@ public class ArtifactRetrievalNLogNComplexity implements ArtifactOrdering {
 	 *  
 	 *   Gegeven een input lijst van grootte N, moet deze implementatie een tijdscomplexiteit van
 	 *   O(n log n) hebben. 
+	 *   
+	 *   @param de art van artifacts 
+	 *   @return de set van onovertroffen artifacts
+	 *   Complexiteit theta(n log n) doordat er 2x een th(n log n) actie doorlopen wordt
 	 */
 	@Override
 	public Set<Artifact> getUnbeatedArtifacts(Set<Artifact> artifacts) { 
 
 		Set<Artifact> result = new HashSet<>(); 
 		
-  	    //O(n log n)	
+		//heapsort waarbij we hier alle elementen op de pq zetten en later doorlopen
   	    PriorityQueue<Artifact> pq = new PriorityQueue<>(Artifact.PRIJS_WAARDE_COMPARATOR);
-        pq.addAll(artifacts);
+        pq.addAll(artifacts);  //th(n log n)    
         
         /**
          * Als we artifacts in lijst zetten beginnen we met het artifact met de laagste prijs en de hoogste waarde
@@ -52,15 +58,15 @@ public class ArtifactRetrievalNLogNComplexity implements ArtifactOrdering {
         //met hulp van de dominates methode
         Artifact maxValueArtifact = null;
         while (!pq.isEmpty()) {                    //O(n)
-          Artifact artifact = pq.poll();           //O(log n)
+          Artifact artifact = pq.poll();           //th(log n)
           if(maxValueArtifact == null || !Artifact.dominates(artifact, maxValueArtifact)) {  //O(1)
-            result.add(artifact);                  //(O log n)
+            result.add(artifact);                  //th(log n)
             maxValueArtifact = artifact;
           }
        }
         
         //op deze manier hebben we de dominates methode niet nodig. 
-        //Zelfde complexiteit maar een paar constante operaties sneller
+        //Zelfde complexiteit maar wel een paar constante operaties sneller
         //O(n log n)
 //        double maxValue = Double.NEGATIVE_INFINITY;
 //        while (!pq.isEmpty()) {                     //O(n)
@@ -92,7 +98,14 @@ public class ArtifactRetrievalNLogNComplexity implements ArtifactOrdering {
 	 *   Gegeven een input lijst van grootte N, moet deze implementatie een tijdscomplexiteit van
 	 *   O(n log n) hebben. 
 	 *   
+	 *   @param artifacts  de art van artifacts 
+	 *   @param priceWeight de weging van de prijs
+	 *   @param valueWeight de weging van de waarde
+     *   @return de gesorteerde set artifacts
+	 *   
 	 *   Deze methode lijkt hetzelfde als die in de klasse ArtifactRetrievalQuadraticComplexity en is een kopie daarvan
+	 *   In deze methode gebruik ik een nieuwe comparitor die vergelijkt op basis van de weging en het op een treeset zet op dezelfde manier als de priorityqueue
+	 *   Complexiteit th(n log n)
 	 */
 	@Override
 	public SortedSet<Artifact> getScoreOrderedArtiacts(Set<Artifact> artifacts, int priceWeight, int valueWeight) {
